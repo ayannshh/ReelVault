@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 
@@ -17,19 +19,24 @@ const User = require("./models/user");
 const mediaRouter = require("./routes/media");
 const userRouter = require("./routes/user");
 
-const port = 8000;
+const port = process.env.PORT || 8000;
+
 const dbUrl =
-    process.env.MONGODB_URI ||
+    process.env.MONGO_URL ||
     "mongodb://127.0.0.1:27017/ReelVault";
 
-// Database Connection
-main()
-    .then(() => console.log("Connected to MongoDB"))
-    .catch((err) => console.error(err));
+console.log("Using DB:", dbUrl.replace(/:\/\/.*@/, "://***@"));
 
+// Database Connection
 async function main() {
     await mongoose.connect(dbUrl);
+    console.log("Connected to MongoDB");
 }
+
+main().catch((err) => {
+    console.error("MongoDB Connection Error:");
+    console.error(err);
+});
 
 // Settings
 app.engine("ejs", ejsMate);
@@ -43,7 +50,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Session Configuration
 const sessionOptions = {
-    secret: process.env.SESSION_SECRET || "development-secret-change-me",
+    secret:
+        process.env.SESSION_SECRET ||
+        "development-secret-change-me",
     resave: false,
     saveUninitialized: false,
 };
@@ -57,9 +66,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(
-    new LocalStrategy(
-        User.authenticate()
-    )
+    new LocalStrategy(User.authenticate())
 );
 
 passport.serializeUser(
@@ -84,7 +91,11 @@ app.use((req, res, next) => {
 
 // Routes
 app.get("/", (req, res) => {
-    res.redirect(req.isAuthenticated() ? "/media" : "/login");
+    res.redirect(
+        req.isAuthenticated()
+            ? "/media"
+            : "/login"
+    );
 });
 
 app.use("/", userRouter);
@@ -94,14 +105,18 @@ app.use("/listings", (req, res) => {
     res.redirect("/media");
 });
 
+// 404
 app.use((req, res) => {
     res.status(404).render("errors/not-found");
 });
 
+// Error Handler
 app.use((err, req, res, next) => {
     console.error(err);
+
     res.status(500).render("errors/error", {
-        message: "Something went wrong. Please try again.",
+        message:
+            "Something went wrong. Please try again.",
     });
 });
 
