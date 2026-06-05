@@ -1,0 +1,19 @@
+<% if(success && success.length > 0) { %>
+    <% success.forEach((message) => { %>
+        <div class="alert app-alert success alert-dismissible fade show">
+            <i class="fa-solid fa-circle-check"></i>
+            <span><%= message %></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% }) %>
+<% } %>
+
+<% if(error && error.length > 0) { %>
+    <% error.forEach((message) => { %>
+        <div class="alert app-alert error alert-dismissible fade show">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span><%= message %></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% }) %>
+<% } %>

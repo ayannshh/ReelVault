@@ -1,0 +1,55 @@
+<% layout("layouts/boilerplate") %>
+
+<section class="auth-layout">
+    <div class="auth-copy">
+        <p class="eyebrow">Welcome Back</p>
+        <h1>Continue your movie and series tracker.</h1>
+        <p>
+            Log in to see only your saved titles, ratings, watch status, notes, and episode progress.
+        </p>
+    </div>
+
+    <form action="/login" method="POST" class="auth-panel">
+        <h2>Login</h2>
+
+        <div class="mb-3">
+            <label class="form-label" for="username">Username</label>
+            <input
+                id="username"
+                type="text"
+                name="username"
+                class="form-control"
+                placeholder="Enter username"
+                autocomplete="username"
+                required
+            >
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="password">Password</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                class="form-control"
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-accent w-100">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Login
+        </button>
+
+        <p class="auth-helper">
+            <a href="/forgot-password">Forgot password?</a>
+        </p>
+
+        <p class="auth-switch">
+            New here?
+            <a href="/signup">Create an account</a>
+        </p>
+    </form>
+</section>

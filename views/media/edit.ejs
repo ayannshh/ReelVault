@@ -1,0 +1,16 @@
+<% layout("layouts/boilerplate") %>
+
+<section class="page-heading">
+    <p class="eyebrow">Edit Title</p>
+    <h1><%= media.title %></h1>
+    <p>Update progress, rating, metadata, poster, and notes for this tracker item.</p>
+</section>
+
+<%- include("_form", {
+    media,
+    action: `/media/${media._id}`,
+    methodOverride: "PUT",
+    submitLabel: "Save Changes",
+    statusOptions,
+    typeOptions
+}) %>

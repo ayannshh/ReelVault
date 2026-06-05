@@ -1,0 +1,144 @@
+<% layout("layouts/boilerplate") %>
+<%
+    const labelFor = (value) => {
+        const option = statusOptions.find((item) => item.value === value);
+        return option ? option.label : value;
+    };
+%>
+
+<section class="detail-layout">
+    <aside class="detail-poster">
+        <img src="<%= media.posterUrl %>" alt="<%= media.title %> poster">
+        <span class="status-pill status-<%= media.status %>">
+            <%= labelFor(media.status) %>
+        </span>
+    </aside>
+
+    <div class="detail-content">
+        <p class="eyebrow"><%= media.type === "series" ? "Web Series" : "Movie" %></p>
+        <h1><%= media.title %></h1>
+
+        <div class="detail-meta">
+            <% if (media.releaseYear) { %>
+                <span><i class="fa-solid fa-calendar"></i> <%= media.releaseYear %></span>
+            <% } %>
+            <% if (media.platform) { %>
+                <span><i class="fa-solid fa-play"></i> <%= media.platform %></span>
+            <% } %>
+            <span>
+                <i class="fa-solid fa-star"></i>
+                <%= media.rating !== null && media.rating !== undefined ? `${media.rating}/10` : "Not rated" %>
+            </span>
+        </div>
+
+        <% if (media.genres && media.genres.length > 0) { %>
+            <div class="genre-row detail-genres">
+                <% media.genres.forEach((genre) => { %>
+                    <span><%= genre %></span>
+                <% }) %>
+            </div>
+        <% } %>
+
+        <% if (media.type === "series") { %>
+            <section class="progress-panel">
+                <div class="progress-heading">
+                    <div>
+                        <span>Episode Progress</span>
+                        <strong><%= media.currentEpisode %>/<%= media.totalEpisodes %> watched</strong>
+                    </div>
+                    <span><%= media.progressPercent %>%</span>
+                </div>
+
+                <div class="progress-track large">
+                    <div class="progress-fill" style="width: <%= media.progressPercent %>%"></div>
+                </div>
+
+                <div class="progress-actions">
+                    <form action="/media/<%= media._id %>/progress" method="POST">
+                        <input type="hidden" name="action" value="decrement">
+                        <button class="btn btn-ghost" <%= media.currentEpisode <= 0 ? "disabled" : "" %>>
+                            <i class="fa-solid fa-minus"></i>
+                            Episode
+                        </button>
+                    </form>
+
+                    <form action="/media/<%= media._id %>/progress" method="POST">
+                        <input type="hidden" name="action" value="increment">
+                        <button class="btn btn-secondary-action" <%= media.currentEpisode >= media.totalEpisodes ? "disabled" : "" %>>
+                            <i class="fa-solid fa-plus"></i>
+                            Episode
+                        </button>
+                    </form>
+
+                    <form action="/media/<%= media._id %>/progress" method="POST">
+                        <input type="hidden" name="action" value="complete">
+                        <button class="btn btn-accent">
+                            <i class="fa-solid fa-check"></i>
+                            Complete
+                        </button>
+                    </form>
+                </div>
+            </section>
+        <% } else { %>
+            <section class="progress-panel movie-panel">
+                <div>
+                    <span>Movie Progress</span>
+                    <strong><%= media.status === "completed" ? "Watched" : "Not watched yet" %></strong>
+                </div>
+                <% if (media.status !== "completed") { %>
+                    <form action="/media/<%= media._id %>/progress" method="POST">
+                        <input type="hidden" name="action" value="complete">
+                        <button class="btn btn-accent">
+                            <i class="fa-solid fa-check"></i>
+                            Mark Watched
+                        </button>
+                    </form>
+                <% } %>
+            </section>
+        <% } %>
+
+        <% if (media.notes) { %>
+            <section class="notes-panel">
+                <h2>Notes</h2>
+                <p><%= media.notes %></p>
+            </section>
+        <% } %>
+
+        <div class="detail-actions">
+            <a href="/media" class="btn btn-ghost">
+                <i class="fa-solid fa-arrow-left"></i>
+                Dashboard
+            </a>
+            <a href="/media/<%= media._id %>/edit" class="btn btn-secondary-action">
+                <i class="fa-solid fa-pen"></i>
+                Edit
+            </a>
+            <% if (media.status !== "dropped") { %>
+                <form action="/media/<%= media._id %>/progress" method="POST">
+                    <input type="hidden" name="action" value="drop">
+                    <button class="btn btn-ghost">
+                        <i class="fa-solid fa-ban"></i>
+                        Drop
+                    </button>
+                </form>
+            <% } %>
+            <form
+                action="/media/<%= media._id %>?_method=DELETE"
+                method="POST"
+                onsubmit="return confirm('Delete this title from your tracker?')"
+            >
+                <button class="btn btn-danger-soft">
+                    <i class="fa-solid fa-trash"></i>
+                    Delete
+                </button>
+            </form>
+        </div>
+
+        <% if (media.external && media.external.officialSite) { %>
+            <a href="<%= media.external.officialSite %>" class="source-link" target="_blank" rel="noreferrer">
+                Official site
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+        <% } %>
+    </div>
+</section>

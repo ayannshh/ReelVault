@@ -1,0 +1,16 @@
+<% layout("layouts/boilerplate") %>
+
+<section class="page-heading">
+    <p class="eyebrow">Add Title</p>
+    <h1>Add a movie or web series</h1>
+    <p>Track watch status, ratings, notes, platform, and episode progress from one account-only dashboard.</p>
+</section>
+
+<%- include("_form", {
+    media,
+    action: "/media",
+    methodOverride: null,
+    submitLabel: "Add to Tracker",
+    statusOptions,
+    typeOptions
+}) %>

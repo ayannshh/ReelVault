@@ -1,0 +1,61 @@
+<% layout("layouts/boilerplate") %>
+
+<section class="auth-layout">
+    <div class="auth-copy">
+        <p class="eyebrow">Start Tracking</p>
+        <h1>Create your private watch vault.</h1>
+        <p>
+            Your movies, web series, ratings, notes, and episode progress stay tied to your login only.
+        </p>
+    </div>
+
+    <form action="/signup" method="POST" class="auth-panel">
+        <h2>Create Account</h2>
+
+        <div class="mb-3">
+            <label class="form-label" for="username">Username</label>
+            <input
+                id="username"
+                type="text"
+                name="username"
+                class="form-control"
+                autocomplete="username"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            <input
+                id="email"
+                type="email"
+                name="email"
+                class="form-control"
+                autocomplete="email"
+                required
+            >
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="password">Password</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                class="form-control"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-accent w-100">
+            <i class="fa-solid fa-user-plus"></i>
+            Sign Up
+        </button>
+
+        <p class="auth-switch">
+            Already have an account?
+            <a href="/login">Login</a>
+        </p>
+    </form>
+</section>

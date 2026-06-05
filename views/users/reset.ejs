@@ -1,0 +1,76 @@
+<% layout("layouts/boilerplate") %>
+
+<section class="auth-layout">
+    <div class="auth-copy">
+        <p class="eyebrow">Verify OTP</p>
+        <h1>Reset your ReelVault password.</h1>
+        <p>
+            Use the 6-digit OTP sent to your email. The OTP expires after 10 minutes.
+        </p>
+    </div>
+
+    <form action="/reset-password" method="POST" class="auth-panel">
+        <h2>Reset Password</h2>
+
+        <div class="mb-3">
+            <label class="form-label" for="email">Account Email</label>
+            <input
+                id="email"
+                type="email"
+                name="email"
+                value="<%= email || '' %>"
+                class="form-control"
+                autocomplete="email"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="otp">OTP</label>
+            <input
+                id="otp"
+                type="text"
+                name="otp"
+                class="form-control"
+                inputmode="numeric"
+                maxlength="6"
+                autocomplete="one-time-code"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="password">New Password</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                class="form-control"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="confirmPassword">Confirm New Password</label>
+            <input
+                id="confirmPassword"
+                type="password"
+                name="confirmPassword"
+                class="form-control"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-accent w-100">
+            <i class="fa-solid fa-key"></i>
+            Reset Password
+        </button>
+
+        <p class="auth-switch">
+            Need a new code?
+            <a href="/forgot-password">Send OTP again</a>
+        </p>
+    </form>
+</section>

@@ -1,0 +1,190 @@
+<% layout("layouts/boilerplate") %>
+<%
+    const labelFor = (value) => {
+        const option = statusOptions.find((item) => item.value === value);
+        return option ? option.label : value;
+    };
+%>
+
+<section class="dashboard-hero">
+    <div>
+        <p class="eyebrow">Personal Watch Tracker</p>
+        <h1>Your movies and web series, under your account only.</h1>
+        <p>
+            Save what you plan to watch, continue web series episode by episode,
+            rate titles out of 10, and keep your list private to your login.
+        </p>
+    </div>
+    <a href="/media/new" class="btn btn-accent hero-action">
+        <i class="fa-solid fa-plus"></i>
+        Add Title
+    </a>
+</section>
+
+<section class="stats-grid" aria-label="Tracker stats">
+    <div class="stat-card">
+        <span>Total</span>
+        <strong><%= stats.total %></strong>
+    </div>
+    <div class="stat-card status-watching">
+        <span>Watching</span>
+        <strong><%= stats.watching %></strong>
+    </div>
+    <div class="stat-card status-planning">
+        <span>Planning</span>
+        <strong><%= stats.planning %></strong>
+    </div>
+    <div class="stat-card status-completed">
+        <span>Completed</span>
+        <strong><%= stats.completed %></strong>
+    </div>
+    <div class="stat-card status-dropped">
+        <span>Dropped</span>
+        <strong><%= stats.dropped %></strong>
+    </div>
+    <div class="stat-card">
+        <span>Avg Rating</span>
+        <strong><%= stats.averageRating || "N/A" %></strong>
+    </div>
+</section>
+
+<form action="/media" method="GET" class="tracker-toolbar">
+    <div class="search-field">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+            type="search"
+            name="q"
+            value="<%= filters.q %>"
+            placeholder="Search title, platform, genre"
+            class="form-control"
+        >
+    </div>
+
+    <select name="status" class="form-select" aria-label="Filter by status">
+        <option value="all">All Statuses</option>
+        <% for (let option of statusOptions) { %>
+            <option value="<%= option.value %>" <%= filters.status === option.value ? "selected" : "" %>>
+                <%= option.label %>
+            </option>
+        <% } %>
+    </select>
+
+    <select name="type" class="form-select" aria-label="Filter by type">
+        <option value="all">Movies + Web Series</option>
+        <% for (let option of typeOptions) { %>
+            <option value="<%= option.value %>" <%= filters.type === option.value ? "selected" : "" %>>
+                <%= option.label %>
+            </option>
+        <% } %>
+    </select>
+
+    <select name="sort" class="form-select" aria-label="Sort tracker">
+        <% for (let option of sortOptions) { %>
+            <option value="<%= option.value %>" <%= filters.sort === option.value ? "selected" : "" %>>
+                <%= option.label %>
+            </option>
+        <% } %>
+    </select>
+
+    <button class="btn btn-secondary-action" type="submit">
+        <i class="fa-solid fa-filter"></i>
+        Apply
+    </button>
+</form>
+
+<% if (mediaItems.length === 0) { %>
+    <section class="empty-state">
+        <i class="fa-solid fa-clapperboard"></i>
+        <h2>No titles here yet</h2>
+        <p>Add your first movie or web series and start building a private watch tracker.</p>
+        <a href="/media/new" class="btn btn-accent">Add First Title</a>
+    </section>
+<% } else { %>
+    <section class="media-grid" aria-label="Your tracker">
+        <% for (let item of mediaItems) { %>
+            <article class="media-card">
+                <a href="/media/<%= item._id %>" class="poster-link">
+                    <img src="<%= item.posterUrl %>" alt="<%= item.title %> poster">
+                    <span class="status-pill status-<%= item.status %>">
+                        <%= labelFor(item.status) %>
+                    </span>
+                </a>
+
+                <div class="media-card-body">
+                    <div class="media-title-row">
+                        <h2><a href="/media/<%= item._id %>"><%= item.title %></a></h2>
+                        <span class="rating-badge">
+                            <i class="fa-solid fa-star"></i>
+                            <%= item.rating !== null && item.rating !== undefined ? `${item.rating}/10` : "NR" %>
+                        </span>
+                    </div>
+
+                    <p class="media-meta">
+                        <i class="fa-solid <%= item.type === 'series' ? 'fa-tv' : 'fa-film' %>"></i>
+                        <%= item.type === "series" ? "Web Series" : "Movie" %>
+                        <% if (item.releaseYear) { %>
+                            <span><%= item.releaseYear %></span>
+                        <% } %>
+                        <% if (item.platform) { %>
+                            <span><%= item.platform %></span>
+                        <% } %>
+                    </p>
+
+                    <% if (item.genres && item.genres.length > 0) { %>
+                        <div class="genre-row">
+                            <% item.genres.slice(0, 3).forEach((genre) => { %>
+                                <span><%= genre %></span>
+                            <% }) %>
+                        </div>
+                    <% } %>
+
+                    <% if (item.type === "series") { %>
+                        <div class="progress-block">
+                            <div>
+                                <span>Episode Progress</span>
+                                <strong><%= item.currentEpisode %>/<%= item.totalEpisodes %></strong>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: <%= item.progressPercent %>%"></div>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <div class="card-actions">
+                        <% if (item.type === "series" && item.status !== "completed" && item.status !== "dropped" && item.currentEpisode < item.totalEpisodes) { %>
+                            <form action="/media/<%= item._id %>/progress" method="POST">
+                                <input type="hidden" name="action" value="increment">
+                                <button class="icon-button" title="Add one episode">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </form>
+                        <% } %>
+
+                        <% if (item.type === "movie" && item.status !== "completed") { %>
+                            <form action="/media/<%= item._id %>/progress" method="POST">
+                                <input type="hidden" name="action" value="complete">
+                                <button class="icon-button" title="Mark watched">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </form>
+                        <% } %>
+
+                        <a href="/media/<%= item._id %>/edit" class="icon-button" title="Edit">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+
+                        <form
+                            action="/media/<%= item._id %>?_method=DELETE"
+                            method="POST"
+                            onsubmit="return confirm('Remove this title from your tracker?')"
+                        >
+                            <button class="icon-button danger" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        <% } %>
+    </section>
+<% } %>

@@ -1,0 +1,200 @@
+<form action="<%= action %>" method="POST" class="media-form" data-media-form>
+    <% if (methodOverride) { %>
+        <input type="hidden" name="_method" value="<%= methodOverride %>">
+    <% } %>
+    <input type="hidden" name="externalSourceName" value="<%= media.external?.sourceName || '' %>" data-source-name>
+    <input type="hidden" name="externalOfficialSite" value="<%= media.external?.officialSite || '' %>" data-official-site>
+    <input type="hidden" name="tvmazeId" value="<%= media.external?.tvmazeId || '' %>" data-tvmaze-id>
+    <input type="hidden" name="iTunesId" value="<%= media.external?.iTunesId || '' %>" data-itunes-id>
+
+    <div class="form-grid">
+        <div class="form-main">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <div class="input-with-action">
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        value="<%= media.title || '' %>"
+                        class="form-control"
+                        placeholder="Breaking Bad, Inception, Dark..."
+                        required
+                    >
+                    <button
+                        type="button"
+                        class="icon-button fetch-button"
+                        data-fetch-media
+                        title="Search title details"
+                    >
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                    </button>
+                </div>
+                <div class="fetch-status" data-fetch-status></div>
+                <div class="search-results" data-search-results hidden></div>
+            </div>
+
+            <div class="media-type-control mb-3">
+                <% for (let option of typeOptions) { %>
+                    <label class="type-option">
+                        <input
+                            type="radio"
+                            name="type"
+                            value="<%= option.value %>"
+                            <%= media.type === option.value ? "checked" : "" %>
+                        >
+                        <span>
+                            <i class="fa-solid <%= option.value === 'movie' ? 'fa-film' : 'fa-tv' %>"></i>
+                            <%= option.label %>
+                        </span>
+                    </label>
+                <% } %>
+            </div>
+
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" name="status" class="form-select">
+                        <% for (let option of statusOptions) { %>
+                            <option
+                                value="<%= option.value %>"
+                                <%= media.status === option.value ? "selected" : "" %>
+                            >
+                                <%= option.label %>
+                            </option>
+                        <% } %>
+                    </select>
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label for="rating" class="form-label">Rating / 10</label>
+                    <select id="rating" name="rating" class="form-select">
+                        <option value="">Not rated yet</option>
+                        <% for (let score = 10; score >= 0; score--) { %>
+                            <option
+                                value="<%= score %>"
+                                <%= media.rating !== null && media.rating !== undefined && Number(media.rating) === score ? "selected" : "" %>
+                            >
+                                <%= score %> / 10
+                            </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row series-fields" data-series-fields>
+                <div class="mb-3 col-md-6">
+                    <label for="currentEpisode" class="form-label">Episodes Watched</label>
+                    <input
+                        type="number"
+                        id="currentEpisode"
+                        name="currentEpisode"
+                        value="<%= media.currentEpisode || 0 %>"
+                        class="form-control"
+                        min="0"
+                        max="<%= media.totalEpisodes || 1 %>"
+                    >
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label for="totalEpisodes" class="form-label">Total Episodes</label>
+                    <input
+                        type="number"
+                        id="totalEpisodes"
+                        name="totalEpisodes"
+                        value="<%= media.totalEpisodes || 1 %>"
+                        class="form-control"
+                        min="1"
+                    >
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <label for="platform" class="form-label">Platform</label>
+                    <input
+                        type="text"
+                        id="platform"
+                        name="platform"
+                        value="<%= media.platform || '' %>"
+                        class="form-control"
+                        placeholder="Netflix, Prime Video, Hotstar..."
+                    >
+                </div>
+
+                <div class="mb-3 col-md-6">
+                    <label for="releaseYear" class="form-label">Release Year</label>
+                    <input
+                        type="number"
+                        id="releaseYear"
+                        name="releaseYear"
+                        value="<%= media.releaseYear || '' %>"
+                        class="form-control"
+                        min="1888"
+                        max="2100"
+                        placeholder="2024"
+                    >
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="genres" class="form-label">Genres</label>
+                <input
+                    type="text"
+                    id="genres"
+                    name="genres"
+                    value="<%= Array.isArray(media.genres) ? media.genres.join(', ') : '' %>"
+                    class="form-control"
+                    placeholder="Drama, Thriller, Comedy"
+                >
+            </div>
+
+            <div class="mb-3">
+                <label for="posterUrl" class="form-label">Poster URL</label>
+                <input
+                    type="url"
+                    id="posterUrl"
+                    name="posterUrl"
+                    value="<%= media.posterUrl || '' %>"
+                    class="form-control"
+                    placeholder="https://..."
+                >
+            </div>
+
+            <div class="mb-4">
+                <label for="notes" class="form-label">Notes</label>
+                <textarea
+                    id="notes"
+                    name="notes"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Why you want to watch it, favorite scenes, where you paused..."
+                ><%= media.notes || '' %></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-accent">
+                    <i class="fa-solid fa-check"></i>
+                    <%= submitLabel %>
+                </button>
+                <a href="/media" class="btn btn-ghost">Cancel</a>
+            </div>
+        </div>
+
+        <aside class="form-preview">
+            <div class="poster-preview">
+                <img
+                    src="<%= media.posterUrl || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80' %>"
+                    alt=""
+                    data-poster-preview
+                >
+            </div>
+            <p class="preview-label">Poster Preview</p>
+            <p class="preview-copy">
+                Use the fetch button after typing a title, then pick the correct movie or web series from the results.
+            </p>
+        </aside>
+    </div>
+</form>
+
+<script src="/js/media-form.js" defer></script>
